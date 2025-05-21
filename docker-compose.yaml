@@ -1,0 +1,31 @@
+services:
+  db-history:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+      - POSTGRES_DB=$POSTGRES_DB
+    ports:
+      - "9433:5432"
+    restart: unless-stopped
+
+  # history_app:
+  #   build:
+  #     dockerfile: it_history_in_dates_bot/Dockerfile
+  #   env_file:
+  #     - .env
+
+  db-history-web:
+    depends_on:
+      - db-history
+    container_name: db_history_web
+    image: dpage/pgadmin4:latest
+    hostname: postgres-web
+    restart: unless-stopped
+    ports:
+      - "8085:80"
+    environment:
+      - PGADMIN_DEFAULT_PASSWORD=postgres
+      - PGADMIN_DEFAULT_EMAIL=postgres@postgres.com
+      - PGADMIN_CONFIG_SERVER_MODE=False
+      - PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED=False
