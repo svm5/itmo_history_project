@@ -49,7 +49,7 @@ def create_story_reply_markup(next_story_id: int):
 def create_question_reply_markup(quiz_id: int, number: int, correct_cnt: int, answers):
     builder = InlineKeyboardBuilder()
     for answer in answers:
-        builder.add(InlineKeyboardButton(
+        builder.row(InlineKeyboardButton(
             text=answer[1],
             callback_data=f"answer_{quiz_id}_{number}_{correct_cnt}_{answer[0]}")
         )
@@ -68,7 +68,7 @@ async def send_question(chat_id: int, quiz_id: int, correct_cnt: int, question_n
     q_id, q_description = int(q[0]), q[1]
     answers = await db.get_answers_by_question_id(q_id)
 
-    await bot.send_message(chat_id, text=q_description, reply_markup=create_question_reply_markup(quiz_id, question_number, correct_cnt, answers))
+    await bot.send_message(chat_id, text=f"Вопрос {question_number}. " + q_description, reply_markup=create_question_reply_markup(quiz_id, question_number, correct_cnt, answers))
 
 
 async def send_story(chat_id: int, story_id: int):
@@ -111,7 +111,7 @@ async def start(message: Message):
     if user is None:
         await db.add_user(chat_id, username, current_time)
 
-    await bot.send_message(chat_id=chat_id, text="Привет!")
+    await bot.send_message(chat_id=chat_id, text="Привет!\nЯ расскажу о том, как развивались информационные технологии в XX веке. После этого ты сможешь пройти квиз, а также получать рассылку")
     await send_story(chat_id, 1)
 
 @router.callback_query(F.data.startswith("story_"))
